@@ -1,0 +1,70 @@
+{
+  "scenes": [
+    {
+      "id": 1,
+      "chapter": "beginning",
+      "jpg": "/scenes/scene-1.jpg",
+      "webp": "/scenes/scene-1.webp",
+      "jpgSm": "/scenes/scene-1-sm.jpg",
+      "webpSm": "/scenes/scene-1-sm.webp",
+      "mp4": null,
+      "couple": "/couple/default.png",
+      "note": "Standing couple looking at each other"
+    },
+    {
+      "id": 2,
+      "chapter": "names",
+      "jpg": "/scenes/scene-2.jpg",
+      "webp": "/scenes/scene-2.webp",
+      "jpgSm": "/scenes/scene-2-sm.jpg",
+      "webpSm": "/scenes/scene-2-sm.webp",
+      "mp4": null,
+      "couple": "/couple/couple-mehndi.png",
+      "note": "Mehndi close-up"
+    },
+    {
+      "id": 3,
+      "chapter": "story",
+      "jpg": "/scenes/scene-3.jpg",
+      "webp": "/scenes/scene-3.webp",
+      "jpgSm": "/scenes/scene-3-sm.jpg",
+      "webpSm": "/scenes/scene-3-sm.webp",
+      "mp4": null,
+      "couple": "/couple/couple-hands.png",
+      "note": "Holding hands"
+    },
+    {
+      "id": 4,
+      "chapter": "first-function",
+      "jpg": "/scenes/scene-4.jpg",
+      "webp": "/scenes/scene-4.webp",
+      "jpgSm": "/scenes/scene-4-sm.jpg",
+      "webpSm": "/scenes/scene-4-sm.webp",
+      "mp4": null,
+      "couple": "/couple/event-dev-darshan.png",
+      "note": "Seated portrait"
+    },
+    {
+      "id": 5,
+      "chapter": "ceremony",
+      "jpg": "/scenes/scene-5.jpg",
+      "webp": "/scenes/scene-5.webp",
+      "jpgSm": "/scenes/scene-5-sm.jpg",
+      "webpSm": "/scenes/scene-5-sm.webp",
+      "mp4": null,
+      "couple": "/couple/event-panigrahan.png",
+      "note": "Standing look (ceremony)"
+    },
+    {
+      "id": 6,
+      "chapter": "celebrations",
+      "jpg": "/scenes/scene-6.jpg",
+      "webp": "/scenes/scene-6.webp",
+      "jpgSm": "/scenes/scene-6-sm.jpg",
+      "webpSm": "/scenes/scene-6-sm.webp",
+      "mp4": null,
+      "couple": "/couple/family.png",
+      "note": "Family group"
+    }
+  ]
+}

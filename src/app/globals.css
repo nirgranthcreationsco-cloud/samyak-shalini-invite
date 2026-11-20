@@ -1,26 +1,294 @@
 @import "tailwindcss";
+@import "lenis/dist/lenis.css";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f7f1e6;
+  --foreground: #2a1a14;
+  --film-gold: #c9a227;
+  --foil-a: #8a6a1f;
+  --foil-b: #f3dc8a;
+  --foil-c: #c9a227;
+  --envelope-maroon: #4a0e22;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-foil-a: #8a6a1f;
+  --color-foil-b: #f3dc8a;
+  --color-foil-c: #c9a227;
+  --color-envelope: #4a0e22;
+
+  --font-sans: var(--font-cormorant), "Cormorant Garamond", serif;
+  --font-body: var(--font-cormorant), "Cormorant Garamond", serif;
+  --font-display: var(--font-cinzel), Cinzel, serif;
+
+  /* One type scale — use everywhere */
+  --text-label: 12px;
+  --text-body: 18px;
+  --text-body-lg: 20px;
+  --text-title: clamp(1.75rem, 5.5vw, 2.5rem);
+  --text-name: clamp(2rem, 7.5vw, 2.75rem);
+  --text-display: clamp(2.25rem, 8vw, 3.25rem);
+  --text-giant: clamp(5rem, 28vw, 9rem);
+
+  --tracking-label: 0.3em;
+  --tracking-name: 0.12em;
+  --tracking-name-wide: 0.3em;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+html {
+  scroll-behavior: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* Progressive enhancement safety: content always readable without motion */
+  .invite-film [data-inv-line],
+  .invite-film [data-monogram],
+  .invite-film [data-name-l],
+  .invite-film [data-name-r],
+  .invite-film [data-amp],
+  .invite-film [data-story-word],
+  .invite-film [data-ticket],
+  .invite-film [data-glass-bottom],
+  .invite-film [data-ceremony-card],
+  .invite-film [data-card-body],
+  .invite-film [data-dd-rise],
+  .invite-film [data-chapter] {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+    filter: none !important;
   }
 }
 
+/* If GSAP never runs, HTML/CSS still shows all invite content */
+.invite-film [data-ceremony-card],
+.invite-film [data-card-body],
+.invite-film [data-ticket],
+.invite-film [data-inv-line],
+.invite-film [data-monogram],
+.invite-film [data-name-l],
+.invite-film [data-name-r],
+.invite-film [data-amp],
+.invite-film [data-story-word],
+.invite-film [data-glass-bottom] {
+  opacity: 1;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #f7f1e6;
+  color: #2a1a14;
+  font-family: var(--font-cormorant), "Cormorant Garamond", "Iowan Old Style",
+    serif;
+  font-size: var(--text-body);
+  line-height: 1.55;
+  overflow-x: hidden;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--film-gold);
+  outline-offset: 2px;
+}
+
+.invite-film {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  overflow-x: hidden;
+  max-width: 430px;
+}
+
+.invite-film::-webkit-scrollbar {
+  display: none;
+}
+
+.invite-film [data-film-content],
+.invite-film section {
+  max-width: 100%;
+}
+
+/* —— Type roles (fonts from next/font CSS variables on <html>) —— */
+.type-label {
+  font-family: var(--font-cinzel), Cinzel, "Palatino Linotype", serif;
+  font-size: var(--text-label);
+  font-weight: 400;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+
+.type-body {
+  font-family: var(--font-cormorant), "Cormorant Garamond", "Iowan Old Style",
+    serif;
+  font-size: var(--text-body);
+  line-height: 1.55;
+}
+
+.type-body-lg {
+  font-family: var(--font-cormorant), "Cormorant Garamond", "Iowan Old Style",
+    serif;
+  font-size: var(--text-body-lg);
+  line-height: 1.55;
+}
+
+.type-title {
+  font-family: var(--font-cinzel), Cinzel, "Palatino Linotype", serif;
+  font-size: var(--text-title);
+  font-weight: 400;
+  letter-spacing: var(--tracking-name);
+  text-transform: uppercase;
+  text-wrap: balance;
+  line-height: 1.15;
+}
+
+.type-name {
+  font-family: var(--font-cinzel), Cinzel, "Palatino Linotype", serif;
+  font-size: var(--text-name);
+  font-weight: 400;
+  letter-spacing: var(--tracking-name);
+  text-transform: uppercase;
+  text-wrap: balance;
+  line-height: 1.1;
+}
+
+.type-amp {
+  font-family: var(--font-cormorant), "Cormorant Garamond", serif;
+  font-style: italic;
+  font-size: calc(var(--text-name) * 0.4);
+  font-weight: 400;
+  line-height: 1;
+}
+
+.type-hi-display {
+  font-family: var(--font-tiro), "Tiro Devanagari Hindi", serif;
+  font-size: var(--text-title);
+  line-height: 1.7;
+  letter-spacing: 0;
+  text-transform: none;
+  text-wrap: balance;
+}
+
+.type-hi-body {
+  font-family: var(--font-noto), "Noto Serif Devanagari", serif;
+  font-size: var(--text-body-lg);
+  line-height: 1.7;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* Gold foil — gradient clip + solid fallback */
+.foil-text {
+  color: var(--foil-c);
+  background-image: linear-gradient(
+    105deg,
+    var(--foil-a) 0%,
+    var(--foil-b) 42%,
+    var(--foil-c) 58%,
+    var(--foil-a) 100%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+  .foil-text {
+    color: var(--foil-c);
+    -webkit-text-fill-color: unset;
+    background: none;
+  }
+}
+
+.foil-shine {
+  background-position: 100% 50%;
+}
+
+/* Film grade */
+.film-grade {
+  filter: contrast(1.05) saturate(0.92) brightness(0.96) sepia(0.12)
+    hue-rotate(-8deg);
+}
+
+.film-grain {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  opacity: 0.07;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.photo-frame {
+  overflow: hidden;
+  border: 1px solid rgba(201, 162, 39, 0.65);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(201, 162, 39, 0.15);
+}
+
+.photo-frame--arch {
+  border-radius: 999px 999px 18px 18px;
+}
+
+.photo-frame--circle {
+  border-radius: 9999px;
+}
+
+.photo-frame--pill {
+  border-radius: 28px;
+}
+
+.ground-shadow {
+  filter: drop-shadow(0 28px 24px rgba(0, 0, 0, 0.45));
+}
+
+.progress-rail {
+  position: fixed;
+  top: 0;
+  right: max(8px, calc(50% - 215px));
+  z-index: 60;
+  width: 2px;
+  height: 100svh;
+  background: rgba(201, 162, 39, 0.15);
+}
+
+.progress-rail > span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-origin: top center;
+  transform: scaleY(0);
+  background: var(--film-gold);
+  will-change: transform;
+}
+
+/* Envelope paper grain */
+.paper-grain {
+  filter: url(#paper-grain);
+}
+
+.btn-magnetic {
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+}
+
+@keyframes chevron-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.75;
+  }
+  50% {
+    transform: translateY(5px);
+    opacity: 1;
+  }
 }

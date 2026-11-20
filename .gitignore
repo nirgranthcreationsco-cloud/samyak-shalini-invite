@@ -39,3 +39,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Local PDF tooling
+.venv-pdf/
+
+# Large frame caches (regenerate via scripts/extract-frames.sh)
+public/frames/*.webp
+!public/frames/manifest.json
+!public/frames/.gitkeep
+
+.u2net/
+public/scenes/_src-*

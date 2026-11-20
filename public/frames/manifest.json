@@ -1,0 +1,10 @@
+{
+  "mode": "svg-fallback",
+  "frameCount": 0,
+  "virtualFrames": 120,
+  "width": 720,
+  "height": 1280,
+  "poster": "/frames/poster.svg",
+  "pattern": "/frames/frame-{index}.webp",
+  "note": "No film.mp4 was present. Run scripts/extract-frames.sh after adding film.mp4 to generate WebP frames."
+}
