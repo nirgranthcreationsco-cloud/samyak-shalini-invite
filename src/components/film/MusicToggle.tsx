@@ -8,6 +8,9 @@ type Props = {
   gold: string;
 };
 
+/** Soft default — music is opt-in, never loud. */
+const DEFAULT_VOLUME = 0.28;
+
 let memoryPref = false;
 const listeners = new Set<() => void>();
 
@@ -22,7 +25,9 @@ function subscribe(onStoreChange: () => void) {
 
 function getClientPref() {
   try {
-    memoryPref = localStorage.getItem(MUSIC_PREF_KEY) === "1";
+    const raw = localStorage.getItem(MUSIC_PREF_KEY);
+    if (raw === "1") memoryPref = true;
+    else if (raw === "0") memoryPref = false;
   } catch {
     // ignore
   }
@@ -50,28 +55,36 @@ export function MusicToggle({ musicUrl, gold }: Props) {
 
   const toggle = useCallback(async () => {
     if (!musicUrl || !audioRef.current) return;
+    const audio = audioRef.current;
+    audio.volume = DEFAULT_VOLUME;
     const next = !unmuted;
     if (next) {
-      audioRef.current.muted = false;
+      audio.muted = false;
       try {
-        await audioRef.current.play();
+        await audio.play();
         startedRef.current = true;
         setPref(true);
       } catch {
         setPref(false);
       }
     } else {
-      audioRef.current.pause();
-      audioRef.current.muted = true;
+      audio.pause();
+      audio.muted = true;
       setPref(false);
     }
   }, [musicUrl, unmuted]);
 
   useEffect(() => {
     if (!musicUrl || !audioRef.current) return;
-    audioRef.current.muted = !unmuted;
-    if (unmuted && startedRef.current) {
-      void audioRef.current.play().catch(() => setPref(false));
+    const audio = audioRef.current;
+    audio.volume = DEFAULT_VOLUME;
+    audio.muted = !unmuted;
+    if (unmuted) {
+      void audio.play().then(() => {
+        startedRef.current = true;
+      }).catch(() => setPref(false));
+    } else {
+      audio.pause();
     }
   }, [unmuted, musicUrl]);
 
@@ -79,21 +92,24 @@ export function MusicToggle({ musicUrl, gold }: Props) {
 
   return (
     <>
-      <audio ref={audioRef} src={musicUrl} loop preload="none" />
+      <audio ref={audioRef} src={musicUrl} loop preload="metadata" />
       <button
         type="button"
         onClick={() => void toggle()}
-        className="fixed left-3 top-3 z-50 flex h-11 w-11 items-center justify-center rounded-full border text-sm backdrop-blur focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+        className="fixed left-3 top-3 z-50 flex min-h-10 items-center gap-1.5 rounded-full border px-3 text-[11px] tracking-[0.14em] uppercase backdrop-blur focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
         style={{
-          borderColor: `${gold}66`,
-          color: "#8A6A1F",
-          background: "rgba(247,241,230,0.9)",
+          borderColor: `${gold}55`,
+          color: unmuted ? "#5A0F2B" : "#8A6A1F",
+          background: "rgba(247,241,230,0.92)",
           outlineColor: gold,
+          opacity: unmuted ? 0.95 : 0.72,
         }}
         aria-pressed={unmuted}
-        aria-label={unmuted ? "Mute music" : "Play music"}
+        aria-label={unmuted ? "Mute music" : "Play soft music"}
+        title={unmuted ? "Mute" : "Play soft music"}
       >
-        ♪
+        <span aria-hidden="true">{unmuted ? "♪" : "♩"}</span>
+        <span>{unmuted ? "On" : "Music"}</span>
       </button>
     </>
   );

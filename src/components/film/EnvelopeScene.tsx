@@ -5,10 +5,12 @@ import gsap from "gsap";
 import type { InviteConfig } from "@/types/invite";
 import { HINDI_COPY } from "@/lib/hindi";
 import { markEnvelopeSeen, usePrefersReducedMotion } from "@/lib/hooks";
+import { parseGuestInvite } from "@/lib/sanitize";
 import { MagneticButton } from "@/components/film/MagneticButton";
 
 type Props = {
   config: InviteConfig;
+  guestName?: string | null;
   visible: boolean;
   onComplete: () => void;
   onSkip: () => void;
@@ -16,7 +18,13 @@ type Props = {
 
 const PARTICLE_CAP = 40;
 
-export function EnvelopeScene({ config, visible, onComplete, onSkip }: Props) {
+export function EnvelopeScene({
+  config,
+  guestName,
+  visible,
+  onComplete,
+  onSkip,
+}: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
   const openingRef = useRef(false);
@@ -26,6 +34,7 @@ export function EnvelopeScene({ config, visible, onComplete, onSkip }: Props) {
   const hindi = config.hindi ?? HINDI_COPY;
   const invocation = hindi.invocation;
   const title = hindi.title;
+  const guest = parseGuestInvite(guestName);
 
   const finish = useCallback(() => {
     markEnvelopeSeen();
@@ -337,7 +346,11 @@ export function EnvelopeScene({ config, visible, onComplete, onSkip }: Props) {
         className="relative z-10 w-full max-w-[300px] border-0 bg-transparent p-0 text-left"
         style={{ perspective: "900px" }}
         onClick={runOpen}
-        aria-label="Open invitation envelope"
+        aria-label={
+          guest.name
+            ? `Open invitation for ${guest.greeting}`
+            : "Open invitation envelope"
+        }
       >
         {/* Envelope body */}
         <div
@@ -351,6 +364,35 @@ export function EnvelopeScene({ config, visible, onComplete, onSkip }: Props) {
             className="pointer-events-none absolute inset-0 opacity-40 paper-grain"
             aria-hidden="true"
           />
+
+          {/* Addressed to guest — visible on the closed envelope */}
+          {guest.name && (
+            <div
+              data-guest-address
+              className="pointer-events-none absolute inset-x-0 bottom-[14%] z-[8] px-6 text-center"
+            >
+              <p
+                className="type-label text-[9px] tracking-[0.28em]"
+                style={{ color: "rgba(243,220,138,0.75)" }}
+              >
+                To
+              </p>
+              <p
+                className="type-name mt-1 text-[1.05rem] leading-tight"
+                style={{ color: "#F6EFE2" }}
+              >
+                {guest.name}
+              </p>
+              {guest.family && (
+                <p
+                  className="type-body mt-0.5 text-[13px]"
+                  style={{ color: "rgba(246,239,226,0.8)" }}
+                >
+                  {guest.family}
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Liner with jaali */}
           <div
@@ -375,6 +417,11 @@ export function EnvelopeScene({ config, visible, onComplete, onSkip }: Props) {
               color: "#2A1A14",
             }}
           >
+            {guest.name && (
+              <p className="type-label mb-2 text-[9px] tracking-[0.22em] text-[#8A6A1F]">
+                For {guest.greeting}
+              </p>
+            )}
             <p
               lang="hi"
               className="type-hi-display foil-text text-[0.95rem] leading-[1.7]"
@@ -391,11 +438,11 @@ export function EnvelopeScene({ config, visible, onComplete, onSkip }: Props) {
               {config.monogram}
             </p>
             <p className="type-name mt-3 text-[0.95rem] text-[#2A1A14]">
-              {config.bride.name}
+              {config.groom.name}
             </p>
             <p className="type-amp foil-text my-0.5">&</p>
             <p className="type-name text-[0.95rem] text-[#2A1A14]">
-              {config.groom.name}
+              {config.bride.name}
             </p>
           </div>
 

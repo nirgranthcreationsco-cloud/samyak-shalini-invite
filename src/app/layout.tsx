@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import {
   Cinzel,
   Cormorant_Garamond,
@@ -6,6 +6,14 @@ import {
   Tiro_Devanagari_Hindi,
 } from "next/font/google";
 import "./globals.css";
+
+/** Force light UI — Samsung/Android dark mode must not invert the invite. */
+export const viewport: Viewport = {
+  colorScheme: "light",
+  themeColor: "#F7F1E6",
+  width: "device-width",
+  initialScale: 1,
+};
 
 const cinzel = Cinzel({
   variable: "--font-cinzel",
@@ -39,20 +47,23 @@ const noto = Noto_Serif_Devanagari({
 export const metadata: Metadata = {
   metadataBase: new URL("http://localhost:3000"),
   title: {
-    default: "Shalini & Samyak | Wedding Invitation",
-    template: "%s · Shalini & Samyak",
+    default: "Samyak & Shalini | Wedding Invitation",
+    template: "%s · Samyak & Shalini",
   },
   description:
-    "Together with our families, we invite you to celebrate the Mangal Parinay of Shalini & Samyak — 6 December 2026, Indore.",
+    "Together with our families, we invite you to celebrate the Mangal Parinay of Samyak & Shalini — 6 December 2026, Indore.",
   openGraph: {
-    title: "Shalini & Samyak | Wedding Invitation",
+    title: "Samyak & Shalini | Wedding Invitation",
     description: "6 December 2026 · Indore — You're invited",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Shalini & Samyak | Wedding Invitation",
+    title: "Samyak & Shalini | Wedding Invitation",
     description: "6 December 2026 · Indore — You're invited",
+  },
+  other: {
+    "color-scheme": "light only",
   },
 };
 
@@ -60,9 +71,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
+      style={{ colorScheme: "light only" }}
       className={`${cinzel.variable} ${cormorant.variable} ${tiro.variable} ${noto.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-body">{children}</body>
+      <body
+        className="flex min-h-full flex-col font-body"
+        style={{ background: "#F7F1E6", color: "#2A1A14", colorScheme: "light only" }}
+      >
+        {children}
+      </body>
     </html>
   );
 }

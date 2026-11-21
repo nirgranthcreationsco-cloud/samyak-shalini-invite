@@ -2,6 +2,7 @@
 @import "lenis/dist/lenis.css";
 
 :root {
+  color-scheme: light only;
   --background: #f7f1e6;
   --foreground: #2a1a14;
   --film-gold: #c9a227;
@@ -9,6 +10,16 @@
   --foil-b: #f3dc8a;
   --foil-c: #c9a227;
   --envelope-maroon: #4a0e22;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root,
+  html,
+  body {
+    color-scheme: light only;
+    background-color: #f7f1e6 !important;
+    color: #2a1a14 !important;
+  }
 }
 
 @theme inline {
@@ -37,8 +48,11 @@
   --tracking-name-wide: 0.3em;
 }
 
+/* Force light — blocks Samsung/Android dark-mode inversion */
 html {
+  color-scheme: light only;
   scroll-behavior: auto;
+  background-color: #f7f1e6;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -85,6 +99,7 @@ html {
 }
 
 body {
+  color-scheme: light only;
   background: #f7f1e6;
   color: #2a1a14;
   font-family: var(--font-cormorant), "Cormorant Garamond", "Iowan Old Style",

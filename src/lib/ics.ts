@@ -80,15 +80,81 @@ function escapeICS(text: string): string {
   return text.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
 }
 
-export function downloadICS(event: InviteEvent, titlePrefix: string): void {
-  const content = buildICS(event, titlePrefix);
+function downloadBlob(content: string, filename: string): void {
   const blob = new Blob([content], { type: "text/calendar;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `${event.title.replace(/\s+/g, "-").toLowerCase()}.ics`;
+  a.download = filename;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+export function downloadICS(event: InviteEvent, titlePrefix: string): void {
+  downloadBlob(
+    buildICS(event, titlePrefix),
+    `${event.title.replace(/\s+/g, "-").toLowerCase()}.ics`
+  );
+}
+
+/** One .ics with every event — for the closing “Add all to calendar” CTA. */
+export function downloadAllICS(
+  events: InviteEvent[],
+  titlePrefix: string
+): void {
+  if (!events.length) return;
+  const stamp = new Date()
+    .toISOString()
+    .replace(/[-:]/g, "")
+    .replace(/\.\d{3}/, "");
+
+  const blocks = events.map((event) => {
+    const start = toICSDate(event.date, event.time);
+    const allDay = start.length === 8;
+    let end = start;
+    if (allDay) {
+      const date = parseISODate(event.date);
+      if (date) {
+        date.setDate(date.getDate() + 1);
+        end = `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}`;
+      }
+    } else if (start) {
+      const y = Number(start.slice(0, 4));
+      const mo = Number(start.slice(4, 6)) - 1;
+      const d = Number(start.slice(6, 8));
+      const h = Number(start.slice(9, 11));
+      const mi = Number(start.slice(11, 13));
+      const dt = new Date(y, mo, d, h + 2, mi);
+      end = `${dt.getFullYear()}${pad(dt.getMonth() + 1)}${pad(dt.getDate())}T${pad(dt.getHours())}${pad(dt.getMinutes())}00`;
+    }
+    const location = [event.venueName, event.venueAddress]
+      .filter(Boolean)
+      .join(", ");
+    return [
+      "BEGIN:VEVENT",
+      `UID:${event.id}-${event.date}@wedding-invite`,
+      `DTSTAMP:${stamp}`,
+      allDay ? `DTSTART;VALUE=DATE:${start}` : `DTSTART:${start}`,
+      allDay ? `DTEND;VALUE=DATE:${end}` : `DTEND:${end}`,
+      `SUMMARY:${escapeICS(`${titlePrefix} — ${event.title}`)}`,
+      location ? `LOCATION:${escapeICS(location)}` : "",
+      "END:VEVENT",
+    ]
+      .filter(Boolean)
+      .join("\r\n");
+  });
+
+  const content = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Wedding Invite//EN",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+    ...blocks,
+    "END:VCALENDAR",
+  ].join("\r\n");
+
+  downloadBlob(content, "wedding-events.ics");
 }

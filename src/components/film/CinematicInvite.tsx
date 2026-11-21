@@ -7,9 +7,7 @@ import { SplitText } from "gsap/SplitText";
 import type { InviteConfig } from "@/types/invite";
 
 gsap.registerPlugin(SplitText);
-import { BlessingsCard } from "@/components/invite/BlessingsCard";
 import { ScratchCard } from "@/components/invite/ScratchCard";
-import { RsvpBlock } from "@/components/invite/RsvpBlock";
 import { FilmPreloader } from "@/components/film/FilmPreloader";
 import { MusicToggle } from "@/components/film/MusicToggle";
 import { EnvelopeScene } from "@/components/film/EnvelopeScene";
@@ -19,14 +17,15 @@ import { GlassBottom } from "@/components/film/GlassBottom";
 import { Countdown } from "@/components/film/Countdown";
 import { CeremonyJourney } from "@/components/film/CeremonyJourney";
 import { DevDarshanSection } from "@/components/film/DevDarshanSection";
+import { EntranceDust } from "@/components/film/EntranceDust";
 import { FamilyPhoto } from "@/components/film/FamilyPhoto";
-import { FamilyCarousel } from "@/components/film/FamilyCarousel";
 import { useFilmScroll } from "@/components/film/useFilmScroll";
 import { startFoilShine } from "@/components/film/foilShine";
 import { runOpacityAudit } from "@/components/film/opacityAudit";
 import { PHOTOS } from "@/lib/film/photos";
 import { formatLongDate } from "@/lib/dates";
-import { sanitizeGuestName } from "@/lib/sanitize";
+import { downloadAllICS } from "@/lib/ics";
+import { parseGuestInvite } from "@/lib/sanitize";
 import { HINDI_COPY } from "@/lib/hindi";
 import {
   hasSeenEnvelope,
@@ -52,7 +51,8 @@ const PRELOAD = [
 export function CinematicInvite({ config, guestName, preview = false }: Props) {
   const gold = "#C9A227";
   const accent = "#5A0F2B";
-  const safeGuest = sanitizeGuestName(guestName);
+  const guest = parseGuestInvite(guestName);
+  const safeGuest = guest.greeting;
   const prefersReduced = usePrefersReducedMotion();
 
   const hindi = config.hindi ?? {
@@ -70,9 +70,12 @@ export function CinematicInvite({ config, guestName, preview = false }: Props) {
   const [doorsDone, setDoorsDone] = useState(false);
   const [skipped, setSkipped] = useState(false);
   const [lotusOn, setLotusOn] = useState(false);
+  const [entranceOn, setEntranceOn] = useState(false);
 
   const events = config.events;
   const firstEvent = events[0];
+  const coupleLabel = `${config.groom.name} & ${config.bride.name}`;
+  const venueMapUrl = events.find((e) => e.mapUrl)?.mapUrl ?? firstEvent?.mapUrl;
   const devEvent =
     events.find((e) => e.id === "dev-darshan") ?? firstEvent;
   const scheduleExcludeIds = useMemo(
@@ -84,10 +87,12 @@ export function CinematicInvite({ config, guestName, preview = false }: Props) {
     config.chapterLines?.beginning ?? "Two hearts. One beautiful journey.";
   const storyWords = storyLine.split(/\s+/).filter(Boolean);
 
-  /** Envelope dissolves onto scene 1 — no dark door flash. */
+  /** Envelope dissolves onto scene 1 — gold dust entrance beat. */
   const beginDoors = useCallback(() => {
     setShowEnvelope(false);
     setDoorsDone(true);
+    setEntranceOn(true);
+    window.setTimeout(() => setEntranceOn(false), 2200);
   }, []);
 
   // Preload photos for film preloader
@@ -539,6 +544,7 @@ export function CinematicInvite({ config, guestName, preview = false }: Props) {
 
       <EnvelopeScene
         config={config}
+        guestName={guestName}
         visible={showEnvelope && !showLoader}
         onComplete={beginDoors}
         onSkip={jumpToCelebrations}
@@ -547,6 +553,8 @@ export function CinematicInvite({ config, guestName, preview = false }: Props) {
       {!showLoader && !showEnvelope && (
         <MusicToggle musicUrl={config.musicUrl} gold={gold} />
       )}
+
+      <EntranceDust active={entranceOn && doorsDone && !showLoader} gold={gold} />
 
       {!showLoader && !showEnvelope && doorsDone && (
         <div className="progress-rail" aria-hidden="true">
@@ -563,10 +571,10 @@ export function CinematicInvite({ config, guestName, preview = false }: Props) {
         }
       >
         <div data-film-content className="relative w-full overflow-x-hidden">
-          {/* ── 1 BEGINNING — photo on light ivory (no black stage) ── */}
+          {/* ── 1 BEGINNING — tighter mobile hero ── */}
           <section
             data-chapter="beginning"
-            className="relative flex min-h-[100svh] flex-col items-center overflow-hidden pb-24 text-center"
+            className="relative flex min-h-[88svh] flex-col items-center overflow-hidden pb-16 text-center"
             style={{ background: "#F7F1E6", color: "#2A1A14" }}
           >
             <div className="absolute inset-0 z-0">
@@ -594,8 +602,8 @@ export function CinematicInvite({ config, guestName, preview = false }: Props) {
               aria-hidden="true"
             />
 
-            <div className="relative z-10 flex w-full flex-1 flex-col items-center px-8 pt-[12svh]">
-              <p data-open-label className="type-label mb-6" style={{ color: "#8A6A1F" }}>
+            <div className="relative z-10 flex w-full flex-1 flex-col items-center px-7 pt-[8svh]">
+              <p data-open-label className="type-label mb-4" style={{ color: "#8A6A1F" }}>
                 {config.chapterLines?.opening ?? "The beginning"}
               </p>
               <p
@@ -605,14 +613,16 @@ export function CinematicInvite({ config, guestName, preview = false }: Props) {
               >
                 {hindi.invocation}
               </p>
-              <p lang="hi" data-inv-line className="type-hi-display mt-3 foil-text">
+              <p lang="hi" data-inv-line className="type-hi-display mt-2 foil-text">
                 {hindi.title}
               </p>
-              <p data-monogram className="type-name foil-text mt-8">
+              <p data-monogram className="type-name foil-text mt-6">
                 {config.monogram}
               </p>
               {safeGuest && (
-                <p className="type-body mt-6 text-[#2A1A14]/85">Dear {safeGuest}</p>
+                <p className="type-body mt-4 text-[#2A1A14]/85">
+                  Dear {safeGuest}
+                </p>
               )}
             </div>
 
@@ -640,7 +650,7 @@ export function CinematicInvite({ config, guestName, preview = false }: Props) {
           {/* ── 2 NAMES — one name block, scratch + countdown in flow ── */}
           <section
             data-chapter="names"
-            className="relative flex flex-col items-center px-6 pb-16 pt-10 text-center"
+            className="relative flex flex-col items-center px-5 pb-12 pt-8 text-center"
             style={{ background: "#FBF6EE", color: "#2A1A14" }}
           >
             {/* Transition 1→2: soft ivory doors */}
@@ -664,36 +674,36 @@ export function CinematicInvite({ config, guestName, preview = false }: Props) {
               }}
               aria-hidden="true"
             />
-            <p className="type-label mb-5" style={{ color: "#8A6A1F" }}>
+            <p className="type-label mb-4" style={{ color: "#8A6A1F" }}>
               With love
             </p>
 
             <div
               data-arch-window
-              className="relative mx-auto w-full max-w-[240px]"
+              className="relative mx-auto w-full max-w-[210px]"
               style={{ willChange: "clip-path" }}
             >
               <PhotoFrame
                 src={PHOTOS.standingLook.webp}
                 srcSm={PHOTOS.standingLook.webpSm}
-                alt={`${config.bride.name} and ${config.groom.name}`}
+                alt={`${config.groom.name} and ${config.bride.name}`}
                 variant="arch"
                 className="aspect-[3/4] w-full"
               />
             </div>
 
-            <div className="mt-7 flex w-full max-w-[360px] flex-col items-center gap-1 overflow-hidden px-2">
+            <div className="mt-5 flex w-full max-w-[360px] flex-col items-center gap-0.5 overflow-hidden px-2">
               <h1 data-name-l className="type-name foil-text text-center">
-                {config.bride.name}
+                {config.groom.name}
               </h1>
               <span data-amp className="type-amp foil-text">
                 &
               </span>
               <h1 data-name-r className="type-name foil-text text-center">
-                {config.groom.name}
+                {config.bride.name}
               </h1>
               <svg
-                className="mt-3 w-[min(220px,70%)]"
+                className="mt-2 w-[min(200px,65%)]"
                 viewBox="0 0 220 8"
                 aria-hidden="true"
               >
@@ -709,7 +719,7 @@ export function CinematicInvite({ config, guestName, preview = false }: Props) {
             </div>
 
             {firstEvent && (
-              <div className="mt-8 flex flex-col items-center gap-2">
+              <div className="mt-6 flex flex-col items-center gap-2">
                 <p className="type-label text-[11px]" style={{ color: "#8A6A1F" }}>
                   Until we meet
                 </p>
@@ -719,7 +729,7 @@ export function CinematicInvite({ config, guestName, preview = false }: Props) {
 
             <div
               data-scratch-wrap
-              className="pointer-events-auto relative z-10 mx-auto mt-9 w-full max-w-[300px]"
+              className="pointer-events-auto relative z-10 mx-auto mt-7 w-full max-w-[300px]"
               onPointerUp={() => setLotusOn(true)}
             >
               <p className="type-label mb-3 text-[11px]" style={{ color: "#8A6A1F" }}>
@@ -749,10 +759,10 @@ export function CinematicInvite({ config, guestName, preview = false }: Props) {
             )}
           </section>
 
-          {/* ── 3 OUR STORY (light) ── */}
+          {/* ── 3 OUR STORY — line once, no duplicate glass ── */}
           <section
             data-chapter="story"
-            className="relative overflow-hidden px-5 pb-20 pt-12"
+            className="relative overflow-hidden px-5 pb-12 pt-10"
             style={{ background: "#F6EFE2", color: "#2A1A14" }}
           >
             {/* Transition 2→3: arch expand */}
@@ -767,8 +777,10 @@ export function CinematicInvite({ config, guestName, preview = false }: Props) {
               }}
               aria-hidden="true"
             />
-            <p className="type-label relative z-10 text-center opacity-60">Our story</p>
-            <p className="type-body-lg relative z-10 mx-auto mt-6 max-w-[20rem] text-center leading-relaxed">
+            <p className="type-label relative z-10 text-center" style={{ color: "#8A6A1F" }}>
+              Our story
+            </p>
+            <p className="type-body-lg relative z-10 mx-auto mt-5 max-w-[20rem] text-center leading-relaxed">
               {storyWords.map((w, i) => (
                 <span
                   key={`${w}-${i}`}
@@ -781,14 +793,14 @@ export function CinematicInvite({ config, guestName, preview = false }: Props) {
             </p>
 
             <div
-              className="relative mx-auto mt-14 h-[42svh] w-full max-w-[380px]"
+              className="relative mx-auto mt-10 h-[36svh] w-full max-w-[360px]"
               style={{ perspective: "900px" }}
             >
               {[
-                { photo: PHOTOS.mehndi, rot: -8, top: "4%", left: "2%" },
-                { photo: PHOTOS.hands, rot: 5, top: "18%", left: "28%" },
-                { photo: PHOTOS.seated, rot: -4, top: "8%", left: "54%" },
-                { photo: PHOTOS.standingLook, rot: 7, top: "28%", left: "12%" },
+                { photo: PHOTOS.mehndi, rot: -8, top: "2%", left: "2%" },
+                { photo: PHOTOS.hands, rot: 5, top: "16%", left: "28%" },
+                { photo: PHOTOS.seated, rot: -4, top: "6%", left: "54%" },
+                { photo: PHOTOS.standingLook, rot: 7, top: "26%", left: "12%" },
               ].map((f, i) => (
                 <div
                   key={i}
@@ -811,21 +823,6 @@ export function CinematicInvite({ config, guestName, preview = false }: Props) {
                 </div>
               ))}
             </div>
-
-            <GlassBottom tone="light">
-              <p className="type-body-lg text-[16px] text-[#2A1A14]">
-                {storyLine}
-              </p>
-              <div className="mt-3 flex justify-center gap-2" aria-hidden="true">
-                {[0, 1, 2].map((i) => (
-                  <span
-                    key={i}
-                    className="h-1.5 w-1.5 rounded-full"
-                    style={{ background: gold, opacity: 0.45 + i * 0.2 }}
-                  />
-                ))}
-              </div>
-            </GlassBottom>
           </section>
 
           {/* ── 4 DEV DARSHAN (compact) ── */}
@@ -848,17 +845,17 @@ export function CinematicInvite({ config, guestName, preview = false }: Props) {
             excludeIds={scheduleExcludeIds}
             hindiEvents={hindi.events}
             gold={gold}
-            coupleLabel={`${config.bride.name} & ${config.groom.name}`}
+            coupleLabel={coupleLabel}
             eyebrow="The day continues"
             title="Ceremonies"
             subtitle="Barat, vows, and blessings"
           />
 
-          {/* ── 6 CLOSING — invite + family + blessings/RSVP (no event re-list) ── */}
+          {/* ── 6 CLOSING — invite + venue CTA + family ── */}
           <section
             id="celebrations"
             data-chapter="celebrations"
-            className="relative overflow-hidden px-5 pb-16 pt-12"
+            className="relative overflow-hidden px-5 pb-14 pt-10"
             style={{
               background: "linear-gradient(180deg, #F7F1E6 0%, #FBF6EE 45%, #F3E6D0 100%)",
               color: "#2A1A14",
@@ -869,10 +866,7 @@ export function CinematicInvite({ config, guestName, preview = false }: Props) {
               <p className="type-label" style={{ color: "#8A6A1F" }}>
                 With warm regards
               </p>
-              <h2
-                className="type-title mt-3"
-                style={{ color: accent }}
-              >
+              <h2 className="type-title mt-3" style={{ color: accent }}>
                 You&apos;re invited
               </h2>
               <p
@@ -887,11 +881,60 @@ export function CinematicInvite({ config, guestName, preview = false }: Props) {
               </p>
             </div>
 
+            {/* Venue CTA — map + add all events */}
+            {firstEvent && (
+              <div
+                data-close-block
+                className="relative z-10 mx-auto mt-8 max-w-[340px] border px-4 py-5 text-center"
+                style={{
+                  borderColor: `${gold}66`,
+                  background: "rgba(255,251,245,0.85)",
+                  borderRadius: 14,
+                }}
+              >
+                <p className="type-label text-[11px]" style={{ color: "#8A6A1F" }}>
+                  Venue
+                </p>
+                <p className="type-title mt-2 text-[1.05rem] text-[#2A1A14]">
+                  {firstEvent.venueName}
+                </p>
+                <p className="type-body mt-1 text-[15px] text-[#2A1A14]/75">
+                  {firstEvent.venueAddress}
+                </p>
+                <div className="mt-4 flex flex-col gap-2">
+                  {venueMapUrl && (
+                    <a
+                      href={venueMapUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="type-label flex min-h-11 items-center justify-center text-[14px] tracking-[0.14em]"
+                      style={{ background: gold, color: "#2A1A14", borderRadius: 8 }}
+                    >
+                      Get Directions
+                    </a>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => downloadAllICS(events, coupleLabel)}
+                    className="type-label flex min-h-11 w-full items-center justify-center border text-[14px] tracking-[0.14em]"
+                    style={{
+                      borderColor: gold,
+                      color: accent,
+                      borderRadius: 8,
+                      background: "transparent",
+                    }}
+                  >
+                    Add all to Calendar
+                  </button>
+                </div>
+              </div>
+            )}
+
             <div data-close-block className="relative z-10 mt-10 flex justify-center px-1">
               <FamilyPhoto
                 src={PHOTOS.family.webp}
                 srcSm={PHOTOS.family.webpSm}
-                alt={`${config.bride.name}, ${config.groom.name} and family`}
+                alt={`${config.groom.name}, ${config.bride.name} and family`}
               />
             </div>
 
@@ -909,9 +952,6 @@ export function CinematicInvite({ config, guestName, preview = false }: Props) {
                 {config.chapterLines?.closing ?? "With love"}
               </p>
               <p className="type-body mt-5 text-[16px] text-[#2A1A14]/90">
-                {config.brideParents}
-              </p>
-              <p className="type-body mt-1 text-[16px] text-[#2A1A14]/90">
                 {config.groomParents}
               </p>
               {config.hostAddress && (
@@ -919,27 +959,6 @@ export function CinematicInvite({ config, guestName, preview = false }: Props) {
                   {config.hostAddress}
                 </p>
               )}
-
-              <FamilyCarousel
-                hostLine={config.hostLine}
-                brideParents={config.brideParents}
-                groomParents={config.groomParents}
-                families={config.families}
-                gold={gold}
-              />
-            </div>
-
-            <div
-              data-close-block
-              className="relative z-10 mx-auto mt-8 max-w-[360px] space-y-4 text-[#2A1A14]"
-            >
-              <BlessingsCard config={config} accent={accent} gold={gold} />
-              <RsvpBlock
-                config={config}
-                accent={accent}
-                gold={gold}
-                defaultName={safeGuest || undefined}
-              />
             </div>
 
             <div
@@ -948,7 +967,7 @@ export function CinematicInvite({ config, guestName, preview = false }: Props) {
             >
               <ArchMountedCutout
                 src={PHOTOS.cutoutStanding}
-                alt={`${config.bride.name} and ${config.groom.name}`}
+                alt={`${config.groom.name} and ${config.bride.name}`}
               />
             </div>
           </section>

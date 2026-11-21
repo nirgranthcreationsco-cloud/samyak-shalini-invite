@@ -15,7 +15,7 @@ export function blessingMessage(
   message: string
 ): string {
   return [
-    `Blessings for ${config.bride.name} & ${config.groom.name}`,
+    `Blessings for ${config.groom.name} & ${config.bride.name}`,
     "",
     `From: ${fromName}`,
     "",
@@ -32,7 +32,7 @@ export function rsvpMessage(
   const status = attending ? "Attending" : "Unable to attend";
   const guests = attending ? `\nGuests: ${guestCount}` : "";
   return [
-    `RSVP for ${config.bride.name} & ${config.groom.name}`,
+    `RSVP for ${config.groom.name} & ${config.bride.name}`,
     "",
     `From: ${fromName}`,
     `Status: ${status}${guests}`,
@@ -47,12 +47,12 @@ export function shareInviteMessage(
   return [
     `Dear ${guestName},`,
     "",
-    `You are warmly invited to celebrate the wedding of ${config.bride.name} & ${config.groom.name}.`,
+    `You are warmly invited to celebrate the wedding of ${config.groom.name} & ${config.bride.name}.`,
     "",
     `Please open your personal invitation:`,
     url,
     "",
     `With love,`,
-    `${config.bride.name} & ${config.groom.name}`,
+    `${config.groom.name} & ${config.bride.name}`,
   ].join("\n");
 }
