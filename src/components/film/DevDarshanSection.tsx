@@ -168,7 +168,7 @@ export function DevDarshanSection({ event, hindiTitle, gold }: Props) {
         </svg>
         <p
           lang="hi"
-          className="type-hi-display relative z-10 pt-8 text-[1.75rem] leading-[1.7] text-[#2A1A14]"
+          className="type-hi-display relative z-10 pt-8 text-[#2A1A14]"
         >
           {title}
         </p>
@@ -176,11 +176,11 @@ export function DevDarshanSection({ event, hindiTitle, gold }: Props) {
 
       <p
         data-day-num
-        className="type-name mt-4 leading-none"
+        className="type-name mt-3 leading-none"
         style={{
-          fontSize: "clamp(4.5rem, 28vw, 6.5rem)",
+          fontSize: "clamp(3rem, 16vw, 4.25rem)",
           color: "transparent",
-          WebkitTextStroke: `1.5px #5A0F2B`,
+          WebkitTextStroke: `1.25px #5A0F2B`,
           letterSpacing: "0.04em",
         }}
       >

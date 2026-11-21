@@ -202,10 +202,10 @@ export function CinematicInvite({ config, guestName, preview = false }: Props) {
       }
       // Progressive enhancement — content stays visible if ST never fires
       gsap.from("[data-inv-line]", {
-        y: 16,
+        y: 12,
         immediateRender: false,
         stagger: 0.1,
-        duration: 0.7,
+        duration: 0.65,
         ease: "power2.out",
         scrollTrigger: {
           trigger: "[data-chapter='beginning']",
@@ -215,9 +215,9 @@ export function CinematicInvite({ config, guestName, preview = false }: Props) {
         },
       });
       gsap.from("[data-monogram]", {
-        scale: 0.88,
+        scale: 0.94,
         immediateRender: false,
-        duration: 0.7,
+        duration: 0.65,
         ease: "power2.out",
         scrollTrigger: {
           trigger: "[data-chapter='beginning']",
@@ -267,11 +267,10 @@ export function CinematicInvite({ config, guestName, preview = false }: Props) {
         }
       );
       gsap.from("[data-name-l], [data-name-r]", {
-        letterSpacing: "0.28em",
-        y: 12,
+        y: 10,
         immediateRender: false,
         ease: "power2.out",
-        duration: 0.8,
+        duration: 0.7,
         scrollTrigger: {
           trigger: "[data-chapter='names']",
           start: "top 75%",
@@ -692,14 +691,14 @@ export function CinematicInvite({ config, guestName, preview = false }: Props) {
               />
             </div>
 
-            <div className="mt-5 flex w-full max-w-[360px] flex-col items-center gap-0.5 overflow-hidden px-2">
-              <h1 data-name-l className="type-name foil-text text-center">
+            <div className="mt-5 flex w-full max-w-[340px] flex-col items-center gap-0.5 px-3">
+              <h1 data-name-l className="type-name foil-text w-full text-center">
                 {config.groom.name}
               </h1>
               <span data-amp className="type-amp foil-text">
                 &
               </span>
-              <h1 data-name-r className="type-name foil-text text-center">
+              <h1 data-name-r className="type-name foil-text w-full text-center">
                 {config.bride.name}
               </h1>
               <svg
@@ -942,7 +941,7 @@ export function CinematicInvite({ config, guestName, preview = false }: Props) {
               data-close-block
               className="relative z-10 mx-auto mt-10 max-w-[340px] text-center text-[#2A1A14]"
             >
-              <p lang="hi" className="type-hi-display foil-text text-[1.6rem]">
+              <p lang="hi" className="type-hi-display foil-text">
                 {hindi.closing}
               </p>
               <p lang="hi" className="type-hi-body mt-3 text-[#2A1A14]/90">

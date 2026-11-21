@@ -229,16 +229,16 @@ export function CeremonyJourney({
                     <p
                       className="type-name leading-none"
                       style={{
-                        fontSize: "clamp(2.5rem, 14vw, 3.25rem)",
+                        fontSize: "clamp(2rem, 10vw, 2.5rem)",
                         color: "transparent",
-                        WebkitTextStroke: `1.5px ${gold}`,
+                        WebkitTextStroke: `1.25px ${gold}`,
                         letterSpacing: "0.04em",
                       }}
                     >
                       {dayNum(ev.date)}
                     </p>
                     <p
-                      className="type-label mt-2 text-[16px] tracking-[0.18em]"
+                      className="type-label mt-2 tracking-[0.16em]"
                       style={{ color: "#8A6A1F" }}
                     >
                       {weekdayFromISO(ev.date)} · {monthName(ev.date)}
@@ -247,15 +247,10 @@ export function CeremonyJourney({
                   <DiyaIcon gold={gold} />
                 </div>
 
-                <h3
-                  lang="hi"
-                  className="type-hi-display mt-3 text-[1.35rem] leading-[1.7] text-[#2A1A14]"
-                >
+                <h3 lang="hi" className="type-hi-display mt-3 text-[#2A1A14]">
                   {hi}
                 </h3>
-                <p className="type-title mt-1 text-[1.1rem] text-[#2A1A14]">
-                  {ev.title}
-                </p>
+                <p className="type-title mt-1 text-[#2A1A14]">{ev.title}</p>
                 <p className="type-body mt-2 text-[16px] text-[#2A1A14]">
                   {ev.time}
                 </p>

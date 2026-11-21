@@ -47,10 +47,10 @@ export function Countdown({
       <span
         className="type-name tabular-nums leading-none"
         style={{
-          fontSize: "clamp(1.75rem, 8vw, 2.25rem)",
+          fontSize: "clamp(1.35rem, 5.5vw, 1.65rem)",
           color: "transparent",
-          WebkitTextStroke: `1.25px ${gold}`,
-          letterSpacing: "0.06em",
+          WebkitTextStroke: `1.1px ${gold}`,
+          letterSpacing: "0.04em",
         }}
       >
         {String(n).padStart(2, "0")}

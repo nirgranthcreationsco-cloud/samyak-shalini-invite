@@ -34,18 +34,18 @@
   --font-body: var(--font-cormorant), "Cormorant Garamond", serif;
   --font-display: var(--font-cinzel), Cinzel, serif;
 
-  /* One type scale — use everywhere */
-  --text-label: 12px;
-  --text-body: 18px;
-  --text-body-lg: 20px;
-  --text-title: clamp(1.75rem, 5.5vw, 2.5rem);
-  --text-name: clamp(2rem, 7.5vw, 2.75rem);
-  --text-display: clamp(2.25rem, 8vw, 3.25rem);
-  --text-giant: clamp(5rem, 28vw, 9rem);
+  /* Compact professional scale — fits 360px film column without clipping */
+  --text-label: 11px;
+  --text-body: 16px;
+  --text-body-lg: 17px;
+  --text-title: clamp(1.2rem, 4.2vw, 1.65rem);
+  --text-name: clamp(1.45rem, 5vw, 1.85rem);
+  --text-display: clamp(1.55rem, 5.5vw, 2rem);
+  --text-giant: clamp(3.25rem, 16vw, 4.75rem);
 
-  --tracking-label: 0.3em;
-  --tracking-name: 0.12em;
-  --tracking-name-wide: 0.3em;
+  --tracking-label: 0.22em;
+  --tracking-name: 0.06em;
+  --tracking-name-wide: 0.16em;
 }
 
 /* Force light — blocks Samsung/Android dark-mode inversion */
@@ -161,7 +161,8 @@ body {
   letter-spacing: var(--tracking-name);
   text-transform: uppercase;
   text-wrap: balance;
-  line-height: 1.15;
+  overflow-wrap: anywhere;
+  line-height: 1.25;
 }
 
 .type-name {
@@ -171,30 +172,34 @@ body {
   letter-spacing: var(--tracking-name);
   text-transform: uppercase;
   text-wrap: balance;
-  line-height: 1.1;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+  line-height: 1.2;
 }
 
 .type-amp {
   font-family: var(--font-cormorant), "Cormorant Garamond", serif;
   font-style: italic;
-  font-size: calc(var(--text-name) * 0.4);
+  font-size: calc(var(--text-name) * 0.45);
   font-weight: 400;
   line-height: 1;
 }
 
 .type-hi-display {
   font-family: var(--font-tiro), "Tiro Devanagari Hindi", serif;
-  font-size: var(--text-title);
-  line-height: 1.7;
+  font-size: clamp(1.15rem, 4vw, 1.45rem);
+  line-height: 1.65;
   letter-spacing: 0;
   text-transform: none;
   text-wrap: balance;
+  overflow-wrap: anywhere;
+  max-width: 100%;
 }
 
 .type-hi-body {
   font-family: var(--font-noto), "Noto Serif Devanagari", serif;
-  font-size: var(--text-body-lg);
-  line-height: 1.7;
+  font-size: var(--text-body);
+  line-height: 1.65;
   letter-spacing: 0;
   text-transform: none;
 }
